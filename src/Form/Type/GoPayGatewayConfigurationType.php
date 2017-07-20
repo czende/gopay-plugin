@@ -40,7 +40,7 @@ final class GoPayGatewayConfigurationType extends AbstractType {
                 ],
             ])
             ->add('isProductionMode', CheckboxType::class, [
-                'label' => 'czende.gopay_plugin.clientSecret'
+                'label' => 'czende.gopay_plugin.isProductionMode'
             ]);
     }
 }
