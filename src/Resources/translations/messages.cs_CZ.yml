@@ -1,7 +1,7 @@
 czende:
     gopay_plugin:
-        goid: GoPay ID
+        goid: 'GoPay ID'
         clientId: Klientské ID
         clientSecret: Tajný klíč
         isProductionMode: Produkční mód
-        gateway_label: GoPay
+        gateway_label: 'GoPay'

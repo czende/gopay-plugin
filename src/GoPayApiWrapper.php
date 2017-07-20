@@ -13,8 +13,11 @@ final class GoPayApiWrapper {
     const SUCCESS_API_STATUS = 'SUCCESS';
     const CANCELED_API_STATUS = 'CANCELED';
 
+    /* @var \GoPay\Api */
+    var $gopay;
+
     public function __construct($goid, $clientId, $clientSecret, $isProductionMode) {
-    	return \GoPay\payments([
+    	$this->gopay = \GoPay\Api::payments([
 			'goid' => $goid,
 			'clientId' => $clientId,
 			'clientSecret' => $clientSecret,
@@ -26,7 +29,7 @@ final class GoPayApiWrapper {
      * Create payment from order
      */
     public function create($order) {
-    	return $this->createPayment($order);
+    	return $this->gopay->createPayment($order);
     }
 
     /**

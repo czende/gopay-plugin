@@ -35,7 +35,7 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
         $details['client_email'] = $payment->getClientEmail();
         $details['client_id'] = $payment->getClientId();
         $details['customerIp'] = $this->getClientIp();
-        $details['status']  = OpenPayUWrapper::NEW_API_STATUS;
+        $details['status']  = GoPayApiWrapper::NEW_API_STATUS;
 
         $request->setResult((array) $details);
     }
