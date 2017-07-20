@@ -19,10 +19,10 @@ public function registerBundles()
 }
 ```
  
-## Testing & Development TODO
+## Testing & Development
 
 In order to run tests, execute following commands:
 
 ```bash
-$ vendor/bin/phpspec
+$ vendor/bin/phpspec run
 ```
