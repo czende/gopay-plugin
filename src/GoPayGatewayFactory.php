@@ -5,7 +5,7 @@ namespace Czende\GoPayPlugin;
 use Czende\GoPayPlugin\Action\CaptureAction;
 use Czende\GoPayPlugin\Action\ConvertPaymentAction;
 use Czende\GoPayPlugin\Action\NotifyAction;
-use Czende\GoPayPlugin\Action\PayUAction;
+use Czende\GoPayPlugin\Action\GoPayAction;
 use Czende\GoPayPlugin\Action\StatusAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
