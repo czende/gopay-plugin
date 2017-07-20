@@ -1,0 +1,6 @@
+czende:
+    gopay_plugin:
+        goid: GoPay ID
+        clientId: Klientské ID
+        clientSecret: Tajný klíč
+        gateway_label: GoPay
