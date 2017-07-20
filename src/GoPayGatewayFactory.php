@@ -23,7 +23,7 @@ class GoPayGatewayFactory extends GatewayFactory {
             'payum.action.capture' => new CaptureAction(),
             'payum.action.convert_payment' => new ConvertPaymentAction(),
             'payum.action.status' => new StatusAction(),
-            'payum.action.set_payu' => new PayUAction(),
+            'payum.action.set_gopay' => new GoPayAction(),
             'payum.action.notify' => new NotifyAction()
         ]);
 
