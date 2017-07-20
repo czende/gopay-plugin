@@ -1,0 +1,12 @@
+services:
+    czende.gopay.form.type.gateway_configuration:
+        class: Czende\GoPayPlugin\Form\Type\GoPayGatewayConfigurationType
+        tags:
+            - { name: sylius.gateway_configuration_type, type: gopay, label: czende.gopay_plugin.gateway_label }
+            - { name: form.type }
+
+    czende.gopay.gateway_factory:
+        class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
+        arguments: [Czende\GoPayPlugin\GoPayGatewayFactory]
+        tags:
+            - { name: payum.gateway_factory_builder, factory: gopay }
