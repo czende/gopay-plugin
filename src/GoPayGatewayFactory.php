@@ -21,13 +21,14 @@ class GoPayGatewayFactory extends GatewayFactory {
             'payum.factory_title' => 'GoPay',
 
             'payum.action.capture' => new CaptureAction(),
-            'payum.action.convert_payment' => new ConvertPaymentAction(),
             'payum.action.status' => new StatusAction(),
+            'payum.action.convert_payment' => new ConvertPaymentAction(),
             'payum.action.set_gopay' => new GoPayAction(),
             'payum.action.notify' => new NotifyAction()
         ]);
 
         if (false == $config['payum.api']) {
+            // Set GoPay default options
             $config['payum.default_options'] = [
                 'goid' => '',
                 'clientId' => '',
@@ -35,8 +36,11 @@ class GoPayGatewayFactory extends GatewayFactory {
                 'isProductionMode' => false
             ];
             $config->defaults($config['payum.default_options']);
-            $config['payum.required_options'] = ['goid', 'clientId', 'clientSecret', 'isProductionMode'];
 
+            // Set GoPay required fields
+            $config['payum.required_options'] = ['goid', 'clientId', 'clientSecret'];
+
+            // Set Payum API
             $config['payum.api'] = function (ArrayObject $config) {
                 $config->validateNotEmpty($config['payum.required_options']);
 

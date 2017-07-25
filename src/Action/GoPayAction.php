@@ -16,6 +16,8 @@ use Sylius\Component\Core\Model\CustomerInterface;
 use Webmozart\Assert\Assert;
 
 final class GoPayAction implements ApiAwareInterface, ActionInterface {
+
+    // Api array
     private $api = [];
 
     /**
@@ -24,11 +26,11 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
     private $goPayApiWrapper;
 
     /**
-     * {@inheritDoc}
+     * Set GOPAY wraper api
      */
     public function setApi($api) {
         if (!is_array($api)) {
-            throw new UnsupportedApiException('Not supported.');
+            throw new UnsupportedApiException('Api not supported.');
         }
 
         $this->api = $api;
@@ -47,34 +49,38 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
         $goPayApi = $this->getGoPayApiWrapper() ? $this->getGoPayApiWrapper() : new GoPayApiWrapper($goid, $clientId, $clientSecret, $isProductionMode);
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        if ($model['orderId'] !== null) {
-            /** @var mixed $response */
-            $response = $goPayApi->retrieve($model['orderId'])->getResponse();
-            Assert::keyExists($response->orders, 0);
+        // if ($model['order_number'] !== null) {
+        //     /** @var mixed $response */
+        //     // $response = $goPayApi->retrieve($model['order_number'])->getResponse();
 
-            if ($response->status->statusCode === GoPayApiWrapper::SUCCESS_API_STATUS) {
-                $model['status'] = $response->orders[0]->status;
-                $request->setModel($model);
-            }
+        //     // Assert::keyExists($response->orders, 0);
+        //     dump($request);
+        //     exit();
+        //     if ($response->statusCode === GoPayApiWrapper::SUCCESS_API_STATUS) {
 
-            return;
-        }
+        //         $model['state'] = $response->orders[0]->statusCode;
+        //         $request->setModel($model);
+        //     }
+
+        //     return;
+        // }
+
 
         /**
          * @var TokenInterface $token
          */
         $token = $request->getToken();
         $order = $this->prepareOrder($token, $model, $goid);
-        $response = $goPayApi->create($order)->getResponse();
+        $response = $goPayApi->create($order);
 
-        if ($response && $response->status->statusCode === GoPayApiWrapper::SUCCESS_API_STATUS) {
-            $model['orderId'] = $response->orderId;
+        if ($response && $response->hasSucceed()) {
+            $model['order_number'] = $response->json['order_number'];
             $request->setModel($model);
 
-            throw new HttpRedirect($response->redirectUri);
+            throw new HttpRedirect($response->json['gw_url']);
         }
 
-        throw GoPayException::newInstance($response->status);
+        throw GoPayException::newInstance($response);
     }
 
     /**
@@ -93,22 +99,19 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
         return $this->goPayApiWrapper;
     }
 
-    /**
-     * @param GoPayApiWrapper $goPayApiWrapper
-     */
     public function setGoPayApiWrapper($goPayApiWrapper) {
         $this->goPayApiWrapper = $goPayApiWrapper;
     }
 
     private function prepareOrder(TokenInterface $token, $model, $goid) {
         $order = [];
-        $order['continueUrl'] = $token->getTargetUrl();
-        $order['customerIp'] = $model['customerIp'];
-        $order['merchantPosId'] = $goid;
-        $order['description'] = $model['description'];
-        $order['currencyCode'] = $model['currencyCode'];
-        $order['totalAmount'] = $model['totalAmount'];
-        $order['extOrderId'] = $model['extOrderId'];
+        $order['target']['type'] = 'ACCOUNT';
+        $order['target']['goid'] = $goid;
+        $order['currency'] = $model['currencyCode'];
+        $order['amount'] = $model['totalAmount'];
+        $order['order_number'] = $model['extOrderId'];
+        $order['lang'] = 'CS';
+
         /** @var CustomerInterface $customer */
         $customer = $model['customer'];
 
@@ -121,14 +124,17 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
             )
         );
 
-        $buyer = [
+        $payerContact = [
             'email' => (string)$customer->getEmail(),
-            'firstName' => (string)$customer->getFirstName(),
-            'lastName' => (string)$customer->getLastName(),
+            'first_name' => (string)$customer->getFirstName(),
+            'last_name' => (string)$customer->getLastName(),
         ];
 
-        $order['buyer'] = $buyer;
-        $order['products'] = $this->resolveProducts($model);
+        $order['payer']['contact'] = $payerContact;
+        $order['items'] = $this->resolveProducts($model);
+
+        $order['callback']['return_url'] = $token->getAfterUrl();
+        $order['callback']['notification_url'] = $token->getAfterUrl();
 
         return $order;
     }
@@ -138,16 +144,16 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
      * @return array
      */
     private function resolveProducts($model) {
-        if (!array_key_exists('products', $model) || count($model['products']) === 0) {
+
+        if (!array_key_exists('items', $model) || count($model['items']) === 0) {
             return [
                 [
                     'name' => $model['description'],
-                    'unitPrice' => $model['totalAmount'],
-                    'quantity' => 1
+                    'amount' => $model['totalAmount']
                 ]
             ];
         }
 
-        return $model['products'];
+        return $model['items'];
     }
 }

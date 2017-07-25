@@ -18,27 +18,31 @@ final class StatusAction implements ActionInterface {
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
-        $status = $model['status'];
+        $state = $model['state'];
 
-        if ($status === null || $status === GoPayApiWrapper::NEW_API_STATUS) {
+        // dump($request);
+        // exit();
+
+
+        if ($state === null || $state === GoPayApiWrapper::CREATED) {
             $request->markNew();
 
             return;
         }
 
-        if ($status === GoPayApiWrapper::PENDING_API_STATUS) {
+        if ($state === GoPayApiWrapper::PENDING_API_STATUS) {
             $request->markPending();
 
             return;
         }
 
-        if ($status === GoPayApiWrapper::CANCELED_API_STATUS) {
+        if ($state === GoPayApiWrapper::CANCELED_API_STATUS) {
             $request->markCanceled();
 
             return;
         }
 
-        if ($status === GoPayApiWrapper::COMPLETED_API_STATUS) {
+        if ($state === GoPayApiWrapper::COMPLETED_API_STATUS) {
             $request->markCaptured();
 
             return;

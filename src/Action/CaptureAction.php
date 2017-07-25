@@ -15,7 +15,10 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface {
     use GatewayAwareTrait;
 
     /**
-     * {@inheritdoc}
+     * Execute capture action with given request
+     * @param mixed $request
+     *
+     * @throws \Payum\Core\Exception\RequestNotSupportedException if the action dose not support the request.
      */
     public function execute($request) {
         RequestNotSupportedException::assertSupports($this, $request);
@@ -31,7 +34,9 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface {
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $request
+     *
+     * @return boolean
      */
     public function supports($request) {
         return
@@ -49,7 +54,7 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface {
     /**
      * @param TokenInterface $token
      * @param ArrayObject $model
-     * @return SetGoPay
+     * @return SetGoPay action
      */
     private function getGoPayAction(TokenInterface $token, ArrayObject $model) {
         $goPayAction = new SetGoPay($token);
