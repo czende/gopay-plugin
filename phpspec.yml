@@ -1,5 +1,0 @@
-suites:
-    main:
-        namespace: Czende\GoPayPlugin
-        psr4_prefix: Czende\GoPayPlugin
-        src_path: .
