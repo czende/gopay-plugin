@@ -3,7 +3,8 @@
 namespace Czende\GoPayPlugin\Action;
 
 use Czende\GoPayPlugin\Exception\GoPayException;
-use Czende\GoPayPlugin\GoPayApiWrapper;
+use Czende\GoPayPlugin\GoPayWrapper;
+use BitBag\PayUPlugin\GoPayWrapperInterface;
 use Czende\GoPayPlugin\SetGoPay;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
@@ -15,29 +16,38 @@ use Payum\Core\Security\TokenInterface;
 use Sylius\Component\Core\Model\CustomerInterface;
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Jan Czernin <jan.czernin@gmail.com>
+ */
 final class GoPayAction implements ApiAwareInterface, ActionInterface {
 
-    // Api array
+    /**
+     * @var Payum\Core\ApiAwareInterface
+     */
     private $api = [];
 
-    /**
-     * @var GoPayApiWrapper
+    /** 
+     * @var Czende\GoPayPlugin\GoPayWrapperInterface
      */
-    private $goPayApiWrapper;
+    private $goPayWrapper;
+
 
     /**
-     * Set GOPAY wraper api
+     * @param mixed $api
+     * @throws Payum\Core\Exception\UnsupportedApiException if the given Api is not supported.
      */
     public function setApi($api) {
         if (!is_array($api)) {
-            throw new UnsupportedApiException('Api not supported.');
+            throw new UnsupportedApiException('Not supported.');
         }
 
         $this->api = $api;
     }
 
+
     /**
-     * {@inheritDoc}
+     * @param mixed $request
+     * @throws Payum\Core\Exception\RequestNotSupportedException if the action dose not support the request.
      */
     public function execute($request) {
         RequestNotSupportedException::assertSupports($this, $request);
@@ -46,27 +56,44 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
         $clientSecret = $this->api['clientSecret'];
         $isProductionMode = $this->api['isProductionMode'];
         
-        $goPayApi = $this->getGoPayApiWrapper() ? $this->getGoPayApiWrapper() : new GoPayApiWrapper($goid, $clientId, $clientSecret, $isProductionMode);
+        $goPayApi = $this->getGoPayWrapper() ? $this->getGoPayWrapper() : new GoPayWrapper($goid, $clientId, $clientSecret, $isProductionMode);
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        // if ($model['order_number'] !== null) {
-        //     /** @var mixed $response */
-        //     // $response = $goPayApi->retrieve($model['order_number'])->getResponse();
+        // MAIN CHECK for status after payment capture
+        if ($model['external_payment_id'] !== null) {
+            
+            /** @var mixed $response */
+            $response = $goPayApi->retrieve($model['external_payment_id']);
 
-        //     // Assert::keyExists($response->orders, 0);
-        //     dump($request);
-        //     exit();
-        //     if ($response->statusCode === GoPayApiWrapper::SUCCESS_API_STATUS) {
+            if ($response->json['state'] === GoPayWrapper::PAID) {
+                $model['status'] = GoPayWrapper::PAID;
+                $request->setModel($model);
+            }
 
-        //         $model['state'] = $response->orders[0]->statusCode;
-        //         $request->setModel($model);
-        //     }
+            if ($response->json['state'] === GoPayWrapper::CANCELED) {
+                $model['status'] = GoPayWrapper::CANCELED;
+                $request->setModel($model);
+            }
 
-        //     return;
-        // }
+            if ($response->json['state'] === GoPayWrapper::TIMEOUTED) {
+                $model['status'] = GoPayWrapper::CANCELED;
+                $request->setModel($model);
+            }
+
+            if ($response->json['state'] === GoPayWrapper::CREATED) {
+                $model['status'] = GoPayWrapper::CANCELED;
+                $request->setModel($model);
+                return;
+            }
+
+            if ($response->json['state'] !== GoPayWrapper::CREATED) {
+                return;
+            }
+        }
 
 
         /**
+         * In case of new the payment scenario
          * @var TokenInterface $token
          */
         $token = $request->getToken();
@@ -74,17 +101,19 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
         $response = $goPayApi->create($order);
 
         if ($response && $response->hasSucceed()) {
-            $model['order_number'] = $response->json['order_number'];
+            $model['external_payment_id'] = $response->json['id'];
             $request->setModel($model);
 
             throw new HttpRedirect($response->json['gw_url']);
         }
 
-        throw GoPayException::newInstance($response);
+        throw GoPayException::newInstance($response->json['state']);
     }
 
+    
     /**
-     * {@inheritDoc}
+     * @param mixed $request
+     * @return boolean
      */
     public function supports($request) {
         return
@@ -92,17 +121,30 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
             $request->getModel() instanceof \ArrayObject;
     }
 
+
     /**
-     * @return GoPayApiWrapper
+     * @return Czende\GoPayPlugin\GoPayWrapperInterface
      */
-    public function getGoPayApiWrapper() {
-        return $this->goPayApiWrapper;
+    public function getGoPayWrapper() {
+        return $this->goPayWrapper;
     }
 
-    public function setGoPayApiWrapper($goPayApiWrapper) {
-        $this->goPayApiWrapper = $goPayApiWrapper;
+
+    /**
+     * @param Czende\GoPayPlugin\GoPayWrapperInterface $goPayWrapper
+     */
+    public function setGoPayWrapper($goPayWrapper) {
+        $this->goPayWrapper = $goPayWrapper;
     }
 
+
+    /**
+     * Prepare order body for GoPay request
+     * @param  TokenInterface   $token
+     * @param  mixed            $model
+     * @param  string           $goid
+     * @return []
+     */
     private function prepareOrder(TokenInterface $token, $model, $goid) {
         $order = [];
         $order['target']['type'] = 'ACCOUNT';
@@ -110,7 +152,7 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
         $order['currency'] = $model['currencyCode'];
         $order['amount'] = $model['totalAmount'];
         $order['order_number'] = $model['extOrderId'];
-        $order['lang'] = 'CS';
+        $order['lang'] = strtoupper(substr($model['order']->getLocaleCode(), 0, 2));
 
         /** @var CustomerInterface $customer */
         $customer = $model['customer'];
@@ -131,29 +173,41 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
         ];
 
         $order['payer']['contact'] = $payerContact;
-        $order['items'] = $this->resolveProducts($model);
+        $order['items'] = $this->resolveProducts($model['order']);
 
-        $order['callback']['return_url'] = $token->getAfterUrl();
-        $order['callback']['notification_url'] = $token->getAfterUrl();
+        $order['callback']['return_url'] = $token->getTargetUrl();
+        $order['callback']['notification_url'] = $token->getTargetUrl();
 
         return $order;
     }
+    
 
     /**
-     * @param $model
-     * @return array
+     * @param Sylius\Component\Core\Model\Order $order
+     * @return []
      */
-    private function resolveProducts($model) {
+    private function resolveProducts($order) {
+        // Set order items array for GoPay body
+        if (!array_key_exists('items', $order) || count($order['items']) === 0) {
+            $items = [];
+            foreach ($order->getItems() as $item) {
+                $items[] = [
+                    'name' => $item->getVariant()->getName(),
+                    'count' => $item->getQuantity(),
+                    'amount' => $item->getTotal()
+                ];
+            }
+        }
 
-        if (!array_key_exists('items', $model) || count($model['items']) === 0) {
-            return [
-                [
-                    'name' => $model['description'],
-                    'amount' => $model['totalAmount']
-                ]
+        // Set shipping price into body
+        if ($order->getShippingTotal() > 0) {
+            $items[] = [
+                'name' => $order->getShipments()->first()->getMethod()->getName(),
+                'count' => 1,
+                'amount' => $order->getShippingTotal()
             ];
         }
 
-        return $model['items'];
+        return $items;
     }
 }

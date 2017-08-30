@@ -2,48 +2,44 @@
 
 namespace Czende\GoPayPlugin\Action;
 
-use Czende\GoPayPlugin\GoPayApiWrapper;
+use Czende\GoPayPlugin\GoPayWrapper;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetStatusInterface;
 
+
+/**
+ * @author Jan Czernin <jan.czernin@gmail.com>
+ */
 final class StatusAction implements ActionInterface {
     
     /**
-     * Execute request.
+     * Execute request based on status.
+     * @param mixed $request
+     * @throws Payum\Core\Exception\RequestNotSupportedException if the action doesn't support the request.
      */
     public function execute($request) {
         /** @var $request GetStatusInterface */
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
-        $state = $model['state'];
+        $status = $model['status'];
 
-        // dump($request);
-        // exit();
-
-
-        if ($state === null || $state === GoPayApiWrapper::CREATED) {
+        if ($status === null || $status === GoPayWrapper::CREATED) {
             $request->markNew();
 
             return;
         }
 
-        if ($state === GoPayApiWrapper::PENDING_API_STATUS) {
-            $request->markPending();
-
-            return;
-        }
-
-        if ($state === GoPayApiWrapper::CANCELED_API_STATUS) {
-            $request->markCanceled();
-
-            return;
-        }
-
-        if ($state === GoPayApiWrapper::COMPLETED_API_STATUS) {
+        if ($status === GoPayWrapper::PAID) {
             $request->markCaptured();
+
+            return;
+        }
+
+        if ($status === GoPayWrapper::CANCELED) {
+            $request->markCanceled();
 
             return;
         }
@@ -52,7 +48,8 @@ final class StatusAction implements ActionInterface {
     }
 
     /**
-     * {@inheritDoc}
+     * @param mixed $request
+     * @return boolean
      */
     public function supports($request) {
         return

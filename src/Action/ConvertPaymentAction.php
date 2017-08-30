@@ -2,7 +2,7 @@
 
 namespace Czende\GoPayPlugin\Action;
 
-use Czende\GoPayPlugin\GoPayApiWrapper;
+use Czende\GoPayPlugin\GoPayWrapper;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
@@ -11,19 +11,22 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
 
+/**
+ * @author Jan Czernin <jan.czernin@gmail.com>
+ */
 final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface {
     use GatewayAwareTrait;
 
     /**
-     * {@inheritDoc}
-     *
-     * @param Convert $request
+     * Execute convert payment action and prepare body for request
+     * @param mixed $request
+     * @throws Payum\Core\Exception\RequestNotSupportedException if the action dose not support the request.
      */
     public function execute($request) {
         RequestNotSupportedException::assertSupports($this, $request);
 
         /**
-         * @var $payment PaymentInterface
+         * @var Payum\Core\Model\PaymentInterface
          */
         $payment = $request->getSource();
         $details = ArrayObject::ensureArrayObject($payment->getDetails());
@@ -35,13 +38,15 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
         $details['client_email'] = $payment->getClientEmail();
         $details['client_id'] = $payment->getClientId();
         $details['customerIp'] = $this->getClientIp();
-        $details['status']  = GoPayApiWrapper::NEW_API_STATUS;
+        $details['status']  = GoPayWrapper::CREATED;
 
         $request->setResult((array) $details);
     }
 
+
     /**
-     * {@inheritDoc}
+     * @param mixed $request
+     * @return boolean
      */
     public function supports($request) {
         return
@@ -49,6 +54,7 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
             $request->getSource() instanceof PaymentInterface &&
             $request->getTo() === 'array';
     }
+    
 
     /**
      * @return string|null

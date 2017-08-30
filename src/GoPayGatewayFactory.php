@@ -9,7 +9,12 @@ use Czende\GoPayPlugin\Action\GoPayAction;
 use Czende\GoPayPlugin\Action\StatusAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
+use GoPay\Definition\TokenScope;
+use GoPay\Definition\Language;
 
+/**
+ * @author Jan Czernin <jan.czernin@gmail.com>
+ */
 class GoPayGatewayFactory extends GatewayFactory {
     
     /**
@@ -19,11 +24,11 @@ class GoPayGatewayFactory extends GatewayFactory {
         $config->defaults([
             'payum.factory_name' => 'gopay',
             'payum.factory_title' => 'GoPay',
-
+            // Main method for setting up gopay api
+            'payum.action.set_gopay' => new GoPayAction(),
             'payum.action.capture' => new CaptureAction(),
             'payum.action.status' => new StatusAction(),
             'payum.action.convert_payment' => new ConvertPaymentAction(),
-            'payum.action.set_gopay' => new GoPayAction(),
             'payum.action.notify' => new NotifyAction()
         ]);
 
@@ -49,6 +54,9 @@ class GoPayGatewayFactory extends GatewayFactory {
                     'clientId' => $config['clientId'],
                     'clientSecret' => $config['clientSecret'],
                     'isProductionMode' => $config['isProductionMode'],
+                    'scope' => TokenScope::ALL,
+                    'language' => Language::CZECH,
+                    'timeout' => 30
                 ];
 
                 return $gopayconfig;

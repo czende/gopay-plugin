@@ -11,14 +11,16 @@ use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Capture;
 use Payum\Core\Security\TokenInterface;
 
+/**
+ * @author Jan Czernin <jan.czernin@gmail.com>
+ */
 final class CaptureAction implements ActionInterface, GatewayAwareInterface {
     use GatewayAwareTrait;
 
     /**
-     * Execute capture action with given request
+     * Execute capture action based on given request and prepare customer and order.
      * @param mixed $request
-     *
-     * @throws \Payum\Core\Exception\RequestNotSupportedException if the action dose not support the request.
+     * @throws Payum\Core\Exception\RequestNotSupportedException if the action dose not support the request.
      */
     public function execute($request) {
         RequestNotSupportedException::assertSupports($this, $request);
@@ -27,6 +29,7 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface {
         ArrayObject::ensureArrayObject($model);
 
         $model['customer'] = $request->getFirstModel()->getOrder()->getCustomer();
+        $model['order'] = $request->getFirstModel()->getOrder();
 
         $goPayAction = $this->getGoPayAction($request->getToken(), $model);
 
@@ -35,7 +38,6 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface {
 
     /**
      * @param mixed $request
-     *
      * @return boolean
      */
     public function supports($request) {
@@ -44,17 +46,19 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface {
             $request->getModel() instanceof \ArrayAccess;
     }
 
+
     /**
-     * @return \Payum\Core\GatewayInterface
+     * @return Payum\Core\GatewayInterface
      */
     public function getGateway() {
         return $this->gateway;
     }
 
+
     /**
-     * @param TokenInterface $token
-     * @param ArrayObject $model
-     * @return SetGoPay action
+     * @param TokenInterface    $token
+     * @param ArrayObject       $model
+     * @return mixed
      */
     private function getGoPayAction(TokenInterface $token, ArrayObject $model) {
         $goPayAction = new SetGoPay($token);
