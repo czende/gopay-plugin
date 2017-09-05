@@ -192,7 +192,7 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
             $items = [];
             foreach ($order->getItems() as $item) {
                 $items[] = [
-                    'name' => $item->getVariant()->getName(),
+                    'name' => $item->getVariant()->getInventoryName(),
                     'count' => $item->getQuantity(),
                     'amount' => $item->getTotal()
                 ];

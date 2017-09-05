@@ -18,5 +18,3 @@ public function registerBundles()
     ]);
 }
 ```
- 
-## TODO: Testing spec :-(
