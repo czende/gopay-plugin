@@ -15,6 +15,13 @@ final class GoPayGatewayConfigurationType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
+            ->add('environment', ChoiceType::class, [
+                'choices' => [
+                    'czende.gopay_plugin.sandbox' => 'sandbox',
+                    'czende.gopay_plugin.production' => 'production',
+                ],
+                'label' => 'czende.gopay_plugin.environment',
+            ])
             ->add('goid', TextType::class, [
                 'label' => 'czende.gopay_plugin.goid',
                 'constraints' => [
@@ -41,13 +48,6 @@ final class GoPayGatewayConfigurationType extends AbstractType {
                         'groups' => ['sylius'],
                     ])
                 ],
-            ])
-            ->add('environment', ChoiceType::class, [
-                'choices' => [
-                    'czende.gopay_plugin.sandbox' => 'sandbox',
-                    'czende.gopay_plugin.production' => 'production',
-                ],
-                'label' => 'czende.gopay_plugin.environment',
             ]);
     }
 }
