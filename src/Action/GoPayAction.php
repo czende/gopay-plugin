@@ -54,9 +54,9 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
         $goid = $this->api['goid'];
         $clientId = $this->api['clientId'];
         $clientSecret = $this->api['clientSecret'];
-        $isProductionMode = $this->api['isProductionMode'];
+        $environment = $this->api['isProductionMode'] == false ? 'sandbox' : 'production';
         
-        $goPayApi = $this->getGoPayWrapper() ? $this->getGoPayWrapper() : new GoPayWrapper($goid, $clientId, $clientSecret, $isProductionMode);
+        $goPayApi = $this->getGoPayWrapper() ? $this->getGoPayWrapper() : new GoPayWrapper($goid, $clientId, $clientSecret, $environment);
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
         // MAIN CHECK for status after payment capture
@@ -107,7 +107,7 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
             throw new HttpRedirect($response->json['gw_url']);
         }
 
-        throw GoPayException::newInstance($response->statusCode);
+        throw GoPayException::newInstance($response->status_code, implode('. ', array_map('array_pop', $response->json->errors)));
     }
 
     
