@@ -44,8 +44,8 @@ final class GoPayGatewayConfigurationType extends AbstractType {
             ])
             ->add('environment', ChoiceType::class, [
                 'choices' => [
-                    'czende.gopay_plugin.production' => 'production',
                     'czende.gopay_plugin.sandbox' => 'sandbox',
+                    'czende.gopay_plugin.production' => 'production',
                 ],
                 'label' => 'czende.gopay_plugin.environment',
             ]);
