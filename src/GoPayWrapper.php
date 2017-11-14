@@ -19,12 +19,12 @@ final class GoPayWrapper implements GoPayWrapperInterface {
     /* @var Gopay\Api */
     var $gopay;
 
-    public function __construct($goid, $clientId, $clientSecret, $isProductionMode) {
+    public function __construct($goid, $clientId, $clientSecret, $environment) {
         $this->gopay = Api::payments([
             'goid' => $goid,
             'clientId' => $clientId,
             'clientSecret' => $clientSecret,
-            'isProductionMode' => $isProductionMode
+            'isProductionMode' => $environment == 'production' ? true : false
         ]);
     }
 

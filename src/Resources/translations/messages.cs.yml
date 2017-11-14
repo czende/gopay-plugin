@@ -3,5 +3,7 @@ czende:
         goid: GoPay ID
         clientId: Klientské ID
         clientSecret: Tajný klíč
-        isProductionMode: Produkční mód
+        environment: Prostředí
+        production: Produkční
+        sandbox: Testovací
         gateway_label: GoPay

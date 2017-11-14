@@ -4,7 +4,7 @@ namespace Czende\GoPayPlugin\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -20,6 +20,7 @@ final class GoPayGatewayConfigurationType extends AbstractType {
                 'constraints' => [
                     new NotBlank([
                         'message' => 'czende.gopay_plugin.gateway_configuration.goid.not_blank',
+                        'groups' => ['sylius'],
                     ])
                 ],
             ])
@@ -28,6 +29,7 @@ final class GoPayGatewayConfigurationType extends AbstractType {
                 'constraints' => [
                     new NotBlank([
                         'message' => 'czende.gopay_plugin.gateway_configuration.clientId.not_blank',
+                        'groups' => ['sylius'],
                     ])
                 ],
             ])
@@ -36,11 +38,16 @@ final class GoPayGatewayConfigurationType extends AbstractType {
                 'constraints' => [
                     new NotBlank([
                         'message' => 'czende.gopay_plugin.gateway_configuration.clientSecret.not_blank',
+                        'groups' => ['sylius'],
                     ])
                 ],
             ])
-            ->add('isProductionMode', CheckboxType::class, [
-                'label' => 'czende.gopay_plugin.isProductionMode'
+            ->add('environment', ChoiceType::class, [
+                'choices' => [
+                    'czende.gopay_plugin.production' => 'production',
+                    'czende.gopay_plugin.sandbox' => 'sandbox',
+                ],
+                'label' => 'czende.gopay_plugin.environment',
             ]);
     }
 }
