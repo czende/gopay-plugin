@@ -6,4 +6,4 @@ czende:
             clientId:
                 not_blank: Prosím zadejte klientské ID
             clientSecret:
-                not_blank: Prosím zadejte Váš tajný klíč
+                not_blank: Prosím zadejte Váš klientský tajný klíč
