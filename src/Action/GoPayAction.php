@@ -107,7 +107,12 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
             throw new HttpRedirect($response->json['gw_url']);
         }
 
-        throw GoPayException::newInstance($response->status_code, implode('. ', array_map('array_pop', $response->json->errors)));
+        // Throw error messages
+        $messages = ['Messages: '];
+        foreach ($response->json->errors as $error) {
+            $messages[] = $error->message;
+        }
+        throw GoPayException::newInstance($response->status_code, implode(' ', $messages));
     }
 
     
