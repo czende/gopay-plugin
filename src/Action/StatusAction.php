@@ -27,7 +27,11 @@ final class StatusAction implements ActionInterface {
         $status = $model['status'];
 
         if ($status === null || $status === GoPayWrapper::CREATED) {
-            $request->markNew();
+            if (isset($model['external_payment_id'])) {
+                $request->markCanceled();
+            } else {
+                $request->markNew();
+            }
 
             return;
         }
