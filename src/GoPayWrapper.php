@@ -24,7 +24,7 @@ final class GoPayWrapper implements GoPayWrapperInterface {
             'goid' => $goid,
             'clientId' => $clientId,
             'clientSecret' => $clientSecret,
-            'isProductionMode' => $environment == 'production' ? true : false
+            'isProductionMode' => ($environment == 'production' ? true : false)
         ]);
     }
 
