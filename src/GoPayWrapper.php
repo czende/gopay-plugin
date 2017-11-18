@@ -16,15 +16,25 @@ final class GoPayWrapper implements GoPayWrapperInterface {
     const CANCELED = 'CANCELED';
     const TIMEOUTED = 'TIMEOUTED';
 
-    /* @var Gopay\Api */
+    /**
+     * @var Gopay\Api
+     */
     var $gopay;
 
+
+    /**
+     * Set GoPay config
+     * @param string $goid        
+     * @param string $clientId    
+     * @param string $clientSecret
+     * @param string $environment 
+     */
     public function __construct($goid, $clientId, $clientSecret, $environment) {
         $this->gopay = Api::payments([
             'goid' => $goid,
             'clientId' => $clientId,
             'clientSecret' => $clientSecret,
-            'isProductionMode' => ($environment == 'production' ? true : false)
+            'isProductionMode' => $environment == 'production' ? true : false
         ]);
     }
 

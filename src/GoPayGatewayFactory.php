@@ -24,7 +24,6 @@ class GoPayGatewayFactory extends GatewayFactory {
         $config->defaults([
             'payum.factory_name' => 'gopay',
             'payum.factory_title' => 'GoPay',
-            // Main method for setting up gopay api
             'payum.action.set_gopay' => new GoPayAction(),
             'payum.action.capture' => new CaptureAction(),
             'payum.action.status' => new StatusAction(),
@@ -38,7 +37,7 @@ class GoPayGatewayFactory extends GatewayFactory {
                 'goid' => '',
                 'clientId' => '',
                 'clientSecret' => '',
-                'isProductionMode' => false
+                'isProductionMode' => ''
             ];
             $config->defaults($config['payum.default_options']);
 

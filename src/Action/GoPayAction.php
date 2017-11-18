@@ -63,8 +63,8 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
         if ($model['external_payment_id'] !== null) {
             
             /** @var mixed $response */
-            $response = $goPayApi->retrieve($model['external_payment_id']);
-
+            $response = $goPayApi->retrieve($model['external_payment_id']);            
+            
             if ($response->json['state'] === GoPayWrapper::PAID) {
                 $model['status'] = GoPayWrapper::PAID;
                 $request->setModel($model);
