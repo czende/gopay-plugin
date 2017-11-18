@@ -54,7 +54,7 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
         $goid = $this->api['goid'];
         $clientId = $this->api['clientId'];
         $clientSecret = $this->api['clientSecret'];
-        $environment = $this->api['isProductionMode'] == false ? 'sandbox' : 'production';
+        $environment = $this->api['isProductionMode'] ? 'production' : 'sandbox';
         
         $goPayApi = $this->getGoPayWrapper() ? $this->getGoPayWrapper() : new GoPayWrapper($goid, $clientId, $clientSecret, $environment);
         $model = ArrayObject::ensureArrayObject($request->getModel());

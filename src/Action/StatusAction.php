@@ -48,6 +48,12 @@ final class StatusAction implements ActionInterface {
             return;
         }
 
+        if ($status === GoPayWrapper::TIMEOUTED) {
+            $request->markCanceled();
+
+            return;
+        }
+
         $request->markUnknown();
     }
 
