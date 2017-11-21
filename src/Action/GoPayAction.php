@@ -63,7 +63,7 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
         if ($model['external_payment_id'] !== null) {
             
             /** @var mixed $response */
-            $response = $goPayApi->retrieve($model['external_payment_id']);            
+            $response = $goPayApi->retrieve($model['external_payment_id']);         
             
             if ($response->json['state'] === GoPayWrapper::PAID) {
                 $model['status'] = GoPayWrapper::PAID;
@@ -156,7 +156,7 @@ final class GoPayAction implements ApiAwareInterface, ActionInterface {
         $order['target']['goid'] = $goid;
         $order['currency'] = $model['currencyCode'];
         $order['amount'] = $model['totalAmount'];
-        $order['order_number'] = $model['extOrderId'];
+        $order['order_number'] = $model['order']->getNumber();
         $order['lang'] = strtoupper(substr($model['order']->getLocaleCode(), 0, 2));
 
         /** @var CustomerInterface $customer */
