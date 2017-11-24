@@ -1,0 +1,9 @@
+czende:
+    gopay_plugin:
+        goid: GoPay ID
+        clientId: Client ID
+        clientSecret: Client Secret Key
+        environment: Environment
+        production: Production
+        sandbox: Sandbox
+        gateway_label: GoPay

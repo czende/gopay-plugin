@@ -1,0 +1,9 @@
+czende:
+    gopay_plugin:
+        gateway_configuration:
+            goid: 
+                not_blank: Please enter GoPay GoID
+            clientId:
+                not_blank: Please enter Client ID
+            clientSecret:
+                not_blank: Please enter Client Secret Key
