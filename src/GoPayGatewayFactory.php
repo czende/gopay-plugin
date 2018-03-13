@@ -4,31 +4,26 @@ namespace Czende\GoPayPlugin;
 
 use Czende\GoPayPlugin\Action\CaptureAction;
 use Czende\GoPayPlugin\Action\ConvertPaymentAction;
-use Czende\GoPayPlugin\Action\NotifyAction;
-use Czende\GoPayPlugin\Action\GoPayAction;
 use Czende\GoPayPlugin\Action\StatusAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
 use GoPay\Definition\TokenScope;
 use GoPay\Definition\Language;
 
-/**
- * @author Jan Czernin <jan.czernin@gmail.com>
- */
-class GoPayGatewayFactory extends GatewayFactory {
-    
+class GoPayGatewayFactory extends GatewayFactory
+{
     /**
-     * Set configs for Payum
+     * {@inheritDoc}
      */
-    protected function populateConfig(ArrayObject $config) {
+    protected function populateConfig(ArrayObject $config)
+    {
         $config->defaults([
             'payum.factory_name' => 'gopay',
             'payum.factory_title' => 'GoPay',
-            'payum.action.set_gopay' => new GoPayAction(),
+            
             'payum.action.capture' => new CaptureAction(),
-            'payum.action.status' => new StatusAction(),
             'payum.action.convert_payment' => new ConvertPaymentAction(),
-            'payum.action.notify' => new NotifyAction()
+            'payum.action.status' => new StatusAction()
         ]);
 
         if (false == $config['payum.api']) {
@@ -52,7 +47,7 @@ class GoPayGatewayFactory extends GatewayFactory {
                     'goid' => $config['goid'],
                     'clientId' => $config['clientId'],
                     'clientSecret' => $config['clientSecret'],
-                    'isProductionMode' => $config['environment'] == 'production' ? true : false,
+                    'isProductionMode' => ($config['environment'] == 'production' ? true : false),
                     'scope' => TokenScope::ALL,
                     'language' => Language::CZECH,
                     'timeout' => 30

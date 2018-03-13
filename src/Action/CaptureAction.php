@@ -2,13 +2,14 @@
 
 namespace Czende\GoPayPlugin\Action;
 
-use Czende\GoPayPlugin\SetGoPay;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Capture;
+use Payum\Core\GatewayInterface;
+use Payum\Core\GatewayAwareInterface;
+use Payum\Core\Exception\RequestNotSupportedException;
+use Czende\GoPayPlugin\SetGoPay;
 use Payum\Core\Security\TokenInterface;
 
 /**
@@ -18,9 +19,7 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface {
     use GatewayAwareTrait;
 
     /**
-     * Execute capture action based on given request and prepare customer and order.
-     * @param mixed $request
-     * @throws Payum\Core\Exception\RequestNotSupportedException if the action dose not support the request.
+     * {@inheritdoc}
      */
     public function execute($request) {
         RequestNotSupportedException::assertSupports($this, $request);
@@ -28,17 +27,18 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface {
         $model = $request->getModel();
         ArrayObject::ensureArrayObject($model);
 
-        $model['customer'] = $request->getFirstModel()->getOrder()->getCustomer();
-        $model['order'] = $request->getFirstModel()->getOrder();
+        $order = $request->getFirstModel()->getOrder();
+        $model['customer'] = $order->getCustomer();
+        $model['locale'] = $this->getFallbackLocaleCode($order->getLocaleCode());
 
         $goPayAction = $this->getGoPayAction($request->getToken(), $model);
 
         $this->getGateway()->execute($goPayAction);
     }
 
+
     /**
-     * @param mixed $request
-     * @return boolean
+     * {@inheritdoc}
      */
     public function supports($request) {
         return
@@ -48,7 +48,7 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface {
 
 
     /**
-     * @return Payum\Core\GatewayInterface
+     * @return GatewayInterface
      */
     public function getGateway() {
         return $this->gateway;
@@ -56,14 +56,26 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface {
 
 
     /**
-     * @param TokenInterface    $token
-     * @param ArrayObject       $model
-     * @return mixed
+     * @param TokenInterface $token
+     * @param ArrayObject $model
+     *
+     * @return SetGoPay
      */
     private function getGoPayAction(TokenInterface $token, ArrayObject $model) {
-        $goPayAction = new SetGoPay($token);
-        $goPayAction->setModel($model);
+        $gopayAction = new SetGoPay($token);
+        $gopayAction->setModel($model);
 
-        return $goPayAction;
+        return $gopayAction;
+    }
+
+
+    /**
+     * Get order fallback locale
+     * @param  string $localeCode
+     * @return string
+     */
+    private function getFallbackLocaleCode($localeCode) {
+        return explode('_', $localeCode)[0];
     }
 }
+

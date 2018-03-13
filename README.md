@@ -19,13 +19,6 @@ public function registerBundles()
 }
 ```
 
-## Good to know
-Be aware of your default Symfony session storage and its permissions. This plugin saves gateway tokens into php session defined in your framework params. 
-In case your application doesn't have proper permissions for `/tmp/session` you have to change the default settings, for example, to:
-```
-framework:
-    ...
-    session:
-        handler_id: session.handler.native_file
-        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
-```
+## Usage
+Add your test credentials in Sylius admin as new payment method. Complete couple of orders with different states and send email to GoPay authorities. 
+After the review you will get production credentials, so just change it in Sylius admin and you are ready to go. 
