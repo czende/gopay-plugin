@@ -2,7 +2,6 @@
 
 namespace Czende\GoPayPlugin\Action;
 
-use Czende\GoPayPlugin\GoPayWrapper;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
@@ -10,6 +9,7 @@ use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
+use Czende\GoPayPlugin\Api\GoPayApiInterface;
 
 /**
  * @author Jan Czernin <jan.czernin@gmail.com>
@@ -18,16 +18,14 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
     use GatewayAwareTrait;
 
     /**
-     * Execute convert payment action and prepare body for request
      * @param mixed $request
-     * @throws Payum\Core\Exception\RequestNotSupportedException if the action dose not support the request.
+     * 
+     * @throws RequestNotSupportedException
      */
     public function execute($request) {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        /**
-         * @var Payum\Core\Model\PaymentInterface
-         */
+        /** @var PaymentInterface */
         $payment = $request->getSource();
         $details = ArrayObject::ensureArrayObject($payment->getDetails());
 
@@ -38,7 +36,7 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
         $details['client_email'] = $payment->getClientEmail();
         $details['client_id'] = $payment->getClientId();
         $details['customerIp'] = $this->getClientIp();
-        $details['status']  = GoPayWrapper::CREATED;
+        $details['status']  = GoPayApiInterface::CREATED;
 
         $request->setResult((array) $details);
     }
@@ -46,6 +44,7 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
 
     /**
      * @param mixed $request
+     * 
      * @return boolean
      */
     public function supports($request) {

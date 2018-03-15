@@ -10,3 +10,19 @@ services:
         arguments: [Czende\GoPayPlugin\GoPayGatewayFactory]
         tags:
             - { name: payum.gateway_factory_builder, factory: gopay }
+
+    czende.gopay.api:
+        class: Czende\GoPayPlugin\Api\GoPayApi
+
+    czende.gopay.gopay_action:
+        class: Czende\GoPayPlugin\Action\GoPayAction
+        arguments: ['@czende.gopay.api', '@payum']
+        tags:
+            - { name: payum.action, factory: gopay, alias: payum.action.set_gopay }
+
+    czende.gopay.notify_action:
+        class: Czende\GoPayPlugin\Action\NotifyAction
+        arguments:
+            - '@czende.gopay.api'
+        tags:
+            - { name: payum.action, factory: gopay, alias: payum.action.notify }
