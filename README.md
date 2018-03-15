@@ -1,13 +1,10 @@
 # Sylius GoPay payment gateway plugin  
 <h1 align="center">
-    <a href="http://sylius.com" title="Sylius" target="_blank">
-        <img src="https://demo.sylius.com/assets/shop/img/logo.png" />
-    </a>
+    <a href="http://sylius.com" title="Sylius" target="_blank"><img src="https://demo.sylius.com/assets/shop/img/logo.png" width="300" /></a>
     <br />
-    <a href="https://www.gopay.com" title="GoPay" target="_blank">
-        <img src="https://dl.dropboxusercontent.com/s/af8fiebcqmk9wgm/GoPay-logo-varianta-A-PANTONE.png" />
-    </a>
+    <a href="https://www.gopay.com" title="GoPay" target="_blank"><img src="https://dl.dropboxusercontent.com/s/af8fiebcqmk9wgm/GoPay-logo-varianta-A-PANTONE.png" width="300" /></a>
 </h1>
+
 ## Installation
 
 ```bash
