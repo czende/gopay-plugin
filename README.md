@@ -1,27 +1,20 @@
 # Sylius GoPay payment gateway plugin  
-<div align="center">
+<div style="text-align: center">
     <a href="http://sylius.com" title="Sylius" target="_blank"><img src="https://demo.sylius.com/assets/shop/img/logo.png" width="300" /></a>
-    <br />
+    <br>
     <a href="https://www.gopay.com" title="GoPay" target="_blank"><img src="https://dl.dropboxusercontent.com/s/af8fiebcqmk9wgm/GoPay-logo-varianta-A-PANTONE.png" width="300" /></a>
 </div>
 
 ## Installation
 
 ```bash
-$ composer require czende/gopay-plugin
+$ composer require bratiask/gopay-plugin
 ```
     
-Add plugin dependencies to your AppKernel.php file:
+Add plugin dependencies to your bundles.php file:
 
 ```php
-public function registerBundles()
-{
-    return array_merge(parent::registerBundles(), [
-        ...
-        
-        new \Czende\GoPayPlugin\GoPayPlugin(),
-    ]);
-}
+Bratiask\GoPayPlugin\GoPayPlugin::class => ['all' => true]
 ```
 
 ## Usage

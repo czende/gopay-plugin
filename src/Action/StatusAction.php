@@ -1,30 +1,26 @@
 <?php
+declare(strict_types=1);
 
-namespace Czende\GoPayPlugin\Action;
+namespace Bratiask\GoPayPlugin\Action;
 
+use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Request\GetStatusInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Czende\GoPayPlugin\Api\GoPayApiInterface;
+use Bratiask\GoPayPlugin\Api\GoPayApiInterface;
 
-/**
- * @author Jan Czernin <jan.czernin@gmail.com>
- */
-class StatusAction implements ActionInterface {
+class StatusAction implements ActionInterface
+{
     /**
-     * {@inheritDoc}
-     *
      * @param GetStatusInterface $request
      */
-    public function execute($request) {
-        /** @var $request GetStatusInterface */
+    public function execute($request): void
+    {
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
         $status = isset($model['gopayStatus']) ? $model['gopayStatus'] : null;
-
-        // Maybe $model['externalPaymentId']
 
         if ((null === $status || GoPayApiInterface::CREATED === $status) && false === isset($model['orderId'])) {
             $request->markNew();
@@ -49,12 +45,8 @@ class StatusAction implements ActionInterface {
         $request->markUnknown();
     }
 
-    
-    /**
-     * {@inheritDoc}
-     */
-    public function supports($request) {
-        return $request instanceof GetStatusInterface &&
-            $request->getModel() instanceof \ArrayAccess;
+    public function supports($request): bool
+    {
+        return $request instanceof GetStatusInterface && $request->getModel() instanceof ArrayAccess;
     }
 }

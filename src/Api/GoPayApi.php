@@ -1,49 +1,38 @@
 <?php
-
 declare(strict_types=1);
 
-namespace Czende\GoPayPlugin\Api;
+namespace Bratiask\GoPayPlugin\Api;
 
 use GoPay\Api;
 use GoPay\Definition\Language;
+use GoPay\Http\Response;
+use GoPay\Payments;
 
-/**
- * @author Jan Czernin <jan.czernin@gmail.com>
- */
-final class GoPayApi implements GoPayApiInterface {
-
-    /** @var Api */
-    var $gopay;
-
+final class GoPayApi implements GoPayApiInterface
+{
     /**
-     * @param string $goid        
-     * @param string $clientId    
-     * @param string $clientSecret
-     * @param string $environment 
+     * @var Payments
      */
-    public function authorize($goId, $clientId, $clientSecret, $environment) {
+    private $gopay;
+
+    public function authorize(string $goId, string $clientId, string $clientSecret, bool $isProductionMode): void
+    {
         $this->gopay = Api::payments([
             'goid' => $goId,
             'clientId' => $clientId,
             'clientSecret' => $clientSecret,
-            'isProductionMode' => $environment,
-            'language' => Language::CZECH
+            'isProductionMode' => $isProductionMode,
+            'language' => Language::ENGLISH
         ]);
     }
 
-
-    /**
-     * @param $order
-     */
-    public function create($order) {
+    public function create(array $order): Response
+    {
         return $this->gopay->createPayment($order);
     }
 
-
-    /**
-     * @param string $paymentId
-     */
-    public function retrieve($paymentId) {
+    public function retrieve(string $paymentId): Response
+    {
         return $this->gopay->getStatus($paymentId);
     }
 }

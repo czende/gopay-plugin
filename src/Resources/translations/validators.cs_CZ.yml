@@ -1,9 +1,0 @@
-czende:
-    gopay_plugin:
-        gateway_configuration:
-            goid: 
-                not_blank: Prosím zadejte GoPay GoID
-            clientId:
-                not_blank: Prosím zadejte klientské ID
-            clientSecret:
-                not_blank: Prosím zadejte Váš klientský tajný klíč

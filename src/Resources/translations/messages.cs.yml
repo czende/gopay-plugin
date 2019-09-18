@@ -1,9 +1,0 @@
-czende:
-    gopay_plugin:
-        goid: GoPay ID
-        clientId: Klientské ID
-        clientSecret: Klientský tajný klíč
-        environment: Prostředí
-        production: Produkční
-        sandbox: Testovací
-        gateway_label: GoPay

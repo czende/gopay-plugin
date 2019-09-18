@@ -1,82 +1,71 @@
 <?php
+declare(strict_types=1);
 
-namespace Czende\GoPayPlugin\Action;
+namespace Bratiask\GoPayPlugin\Action;
 
-use Czende\GoPayPlugin\Api\GoPayApiInterface;
-use Czende\GoPayPlugin\SetGoPay;
+use ArrayObject;
+use Bratiask\GoPayPlugin\Api\GoPayApiInterface;
+use Bratiask\GoPayPlugin\SetGoPay;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
-use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\Bridge\Spl\ArrayObject as CoreArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\Reply\HttpRedirect;
+use Payum\Core\Request\Generic;
 use Payum\Core\Security\TokenInterface;
 use Payum\Core\Payum;
+use Payum\Core\Storage\IdentityInterface;
+use RuntimeException;
 use Sylius\Component\Core\Model\CustomerInterface;
 use GoPay\Definition\Language;
 use Webmozart\Assert\Assert;
 
-/**
- * @author Jan Czernin <jan.czernin@gmail.com>
- */
-class GoPayAction implements ApiAwareInterface, ActionInterface {
-    
-    /**
-     * @var array
-     */
+class GoPayAction implements ApiAwareInterface, ActionInterface
+{
+    protected $gopayApi;
     private $api = [];
-
-    /**
-     * @var Payum
-     */
     private $payum;
 
-    /**
-     * @var GoPayApiInterface
-     */
-    protected $gopayApi;
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setApi($api) {
-        if (!is_array($api)) {
-            throw new UnsupportedApiException('Not supported.');
-        }
-
-        $this->api = $api;
-    }
-
-    /**
-     * @param GoPayApiInterface $gopayApi
-     * @param Payum $payum
-     */
-    public function __construct(GoPayApiInterface $gopayApi, Payum $payum) {
+    public function __construct(GoPayApiInterface $gopayApi, Payum $payum)
+    {
         $this->gopayApi = $gopayApi;
         $this->payum = $payum;
     }
 
-
     /**
-     * {@inheritDoc}
+     * @param Generic $request
      */
-    public function execute($request) {
+    public function execute($request): void
+    {
         RequestNotSupportedException::assertSupports($this, $request);
         $goId = $this->api['goid'];
         $clientId = $this->api['clientId'];
         $clientSecret = $this->api['clientSecret'];
         $environment = $this->api['isProductionMode'];
 
-        $gopayApi = $this->getGoPayApi();
+        $gopayApi = $this->gopayApi;
         $gopayApi->authorize($goId, $clientId, $clientSecret, $environment);
 
-        $model = ArrayObject::ensureArrayObject($request->getModel());
+        $model = CoreArrayObject::ensureArrayObject($request->getModel());
 
-        /**
-         * Not new order
-         */
-        if (null !== $model['orderId'] && null !== $model['externalPaymentId']) {
+        if (null === $model['orderId'] || null === $model['externalPaymentId']) {
+            // New order.
+            $token = $request->getToken();
+            $order = $this->prepareOrder($token, $model, $goId);
+            $response = $gopayApi->create($order);
+
+            if ($response && GoPayApiInterface::CREATED === $response->json['state']) {
+                $model['orderId'] = $response->json['order_number'];
+                $model['externalPaymentId'] = $response->json['id'];
+                $request->setModel($model);
+
+                throw new HttpRedirect($response->json['gw_url']);
+            }
+
+            throw new RuntimeException($response->__toString());
+        } else {
+            // Existing order.
             $response = $gopayApi->retrieve($model['externalPaymentId']);
 
             if (GoPayApiInterface::PAID === $response->json['state']) {
@@ -98,66 +87,30 @@ class GoPayAction implements ApiAwareInterface, ActionInterface {
                 $model['gopayStatus'] = GoPayApiInterface::CANCELED;
                 $request->setModel($model);
             }
+        }
+    }
 
-            return;
+    public function supports($request): bool
+    {
+        return $request instanceof SetGoPay && $request->getModel() instanceof ArrayObject;
+    }
+
+    public function setApi($api): void
+    {
+        if (!is_array($api)) {
+            throw new UnsupportedApiException('Not supported.');
         }
 
-
-        /**
-         * New order
-         */
-        
-        /** @var TokenInterface */
-        $token = $request->getToken();
-        $order = $this->prepareOrder($token, $model, $goId);
-        $response = $gopayApi->create($order);
-
-        if ($response && GoPayApiInterface::CREATED === $response->json['state']) {
-            $model['orderId'] = $response->json['order_number'];
-            $model['externalPaymentId'] = $response->json['id'];
-            $request->setModel($model);
-
-            throw new HttpRedirect($response->json['gw_url']);
-        }
-
-        throw \RuntimeException::newInstance($response->__toString());
+        $this->api = $api;
     }
 
-    /**
-     * @param mixed $request
-     * @return boolean
-     */
-    public function supports($request) {
-        return
-            $request instanceof SetGoPay &&
-            $request->getModel() instanceof \ArrayObject;
-    }
-
-
-    /**
-     * @return GoPayApiInterface
-     */
-    public function getGoPayApi() {
-        return $this->gopayApi;
-    }
-
-
-    /**
-     * @param GoPayApiInterface $gopayApi
-     */
-    public function setGoPayApi($gopayApi) {
+    public function setGoPayApi(GoPayApiInterface $gopayApi): void
+    {
         $this->gopayApi = $gopayApi;
     }
 
-
-    /**
-     * Prepare order body for GoPay request
-     * @param  TokenInterface   $token
-     * @param  mixed            $model
-     * @param  string           $goid
-     * @return []
-     */
-    private function prepareOrder(TokenInterface $token, $model, $goid) {
+    private function prepareOrder(TokenInterface $token, CoreArrayObject $model, string $goid): array
+    {
         $notifyToken = $this->createNotifyToken($token->getGatewayName(), $token->getDetails());
 
         $order = [];
@@ -166,7 +119,7 @@ class GoPayAction implements ApiAwareInterface, ActionInterface {
         $order['currency'] = $model['currencyCode'];
         $order['amount'] = $model['totalAmount'];
         $order['order_number'] = $model['extOrderId'];
-        $order['lang'] = Language::CZECH;
+        $order['lang'] = Language::ENGLISH;
 
         /** @var CustomerInterface $customer */
         $customer = $model['customer'];
@@ -194,13 +147,9 @@ class GoPayAction implements ApiAwareInterface, ActionInterface {
 
         return $order;
     }
-    
 
-    /**
-     * @param $model
-     * @return []
-     */
-    private function resolveProducts($model) {
+    private function resolveProducts(CoreArrayObject $model): array
+    {
         if (!array_key_exists('items', $model) || count($model['items']) === 0) {
             return [
                 [
@@ -209,19 +158,12 @@ class GoPayAction implements ApiAwareInterface, ActionInterface {
                 ]
             ];
         }
+
+        return [];
     }
 
-
-    /**
-     * @param string $gatewayName
-     * @param object $model
-     *
-     * @return TokenInterface
-     */
-    private function createNotifyToken($gatewayName, $model) {
-        return $this->payum->getTokenFactory()->createNotifyToken(
-            $gatewayName,
-            $model
-        );
+    private function createNotifyToken(string $gatewayName, IdentityInterface $model): TokenInterface
+    {
+        return $this->payum->getTokenFactory()->createNotifyToken($gatewayName, $model);
     }
 }

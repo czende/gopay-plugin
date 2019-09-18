@@ -1,28 +1,22 @@
 services:
-    czende.gopay.form.type.gateway_configuration:
-        class: Czende\GoPayPlugin\Form\Type\GoPayGatewayConfigurationType
+    Bratiask\GoPayPlugin\Form\Type\GoPayGatewayConfigurationType:
         tags:
-            - { name: sylius.gateway_configuration_type, type: gopay, label: czende.gopay_plugin.gateway_label }
+            - { name: sylius.gateway_configuration_type, type: gopay, label: bratiask.gopay_plugin.gateway_label }
             - { name: form.type }
 
-    czende.gopay.gateway_factory:
-        class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
-        arguments: [Czende\GoPayPlugin\GoPayGatewayFactory]
+    Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder:
+        arguments: [Bratiask\GoPayPlugin\GoPayGatewayFactory]
         tags:
             - { name: payum.gateway_factory_builder, factory: gopay }
 
-    czende.gopay.api:
-        class: Czende\GoPayPlugin\Api\GoPayApi
+    Bratiask\GoPayPlugin\Api\GoPayApi:
 
-    czende.gopay.gopay_action:
-        class: Czende\GoPayPlugin\Action\GoPayAction
-        arguments: ['@czende.gopay.api', '@payum']
+    Bratiask\GoPayPlugin\Action\GoPayAction:
+        arguments: ['@Bratiask\GoPayPlugin\Api\GoPayApi', '@payum']
         tags:
             - { name: payum.action, factory: gopay, alias: payum.action.set_gopay }
 
-    czende.gopay.notify_action:
-        class: Czende\GoPayPlugin\Action\NotifyAction
-        arguments:
-            - '@czende.gopay.api'
+    Bratiask\GoPayPlugin\Action\NotifyAction:
+        arguments: ['@Bratiask\GoPayPlugin\Api\GoPayApi']
         tags:
             - { name: payum.action, factory: gopay, alias: payum.action.notify }

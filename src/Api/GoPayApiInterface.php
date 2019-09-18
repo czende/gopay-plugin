@@ -1,32 +1,20 @@
 <?php
+declare(strict_types=1);
 
-namespace Czende\GoPayPlugin\Api;
+namespace Bratiask\GoPayPlugin\Api;
 
-/**
- * @author Jan Czernin <jan.czernin@gmail.com>
- */
-interface GoPayApiInterface {
+use GoPay\Http\Response;
 
+interface GoPayApiInterface
+{
     const CREATED = 'CREATED';
     const PAID = 'PAID';
     const CANCELED = 'CANCELED';
     const TIMEOUTED = 'TIMEOUTED';
 
-    /**
-     * @param $goId
-     * @param $clientId
-     * @param $clientSecret
-     * @param $environment
-     */
-    public function authorize($goId, $clientId, $clientSecret, $environment);
+    public function authorize(string $goId, string $clientId, string $clientSecret, bool $isProductionMode): void;
 
-    /**
-     * @param $order
-     */
-    public function create($order);
+    public function create(array $order): Response;
 
-    /**
-     * @param string $paymentId
-     */
-    public function retrieve($paymentId);
+    public function retrieve(string $paymentId): Response;
 }
