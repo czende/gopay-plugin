@@ -42,10 +42,10 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         $goId = $this->api['goid'];
         $clientId = $this->api['clientId'];
         $clientSecret = $this->api['clientSecret'];
-        $environment = $this->api['isProductionMode'];
+        $isProductionMode = $this->api['isProductionMode'];
 
         $gopayApi = $this->gopayApi;
-        $gopayApi->authorize($goId, $clientId, $clientSecret, $environment);
+        $gopayApi->authorize($goId, $clientId, $clientSecret, $isProductionMode);
 
         $model = CoreArrayObject::ensureArrayObject($request->getModel());
 
