@@ -55,7 +55,7 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
             $order = $this->prepareOrder($token, $model, $goId);
             $response = $gopayApi->create($order);
 
-            if ($response && GoPayApiInterface::CREATED === $response->json['state']) {
+            if ($response && false === isset($response->json['errors']) && GoPayApiInterface::CREATED === $response->json['state']) {
                 $model['orderId'] = $response->json['order_number'];
                 $model['externalPaymentId'] = $response->json['id'];
                 $request->setModel($model);
@@ -63,7 +63,7 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
                 throw new HttpRedirect($response->json['gw_url']);
             }
 
-            throw new RuntimeException($response->__toString());
+            throw new RuntimeException('GoPay error: ' . $response->__toString());
         } else {
             // Existing order.
             $response = $gopayApi->retrieve($model['externalPaymentId']);
