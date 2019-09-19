@@ -3,7 +3,7 @@ bratiask:
         gateway_configuration:
             goid:
                 not_blank: Please enter GoPay GoID
-            clientId:
+            client_id:
                 not_blank: Please enter Client ID
-            clientSecret:
+            client_secret:
                 not_blank: Please enter Client Secret Key

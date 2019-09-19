@@ -1,9 +1,7 @@
 bratiask:
     gopay_plugin:
         goid: GoPay ID
-        clientId: Client ID
-        clientSecret: Client Secret Key
-        environment: Environment
-        production: Production
-        sandbox: Sandbox
+        client_id: Client ID
+        client_secret: Client Secret Key
+        is_production_mode: Production mode
         gateway_label: GoPay

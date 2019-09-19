@@ -14,12 +14,12 @@ final class GoPayGatewayConfigurationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('environment', ChoiceType::class, [
+            ->add('isProductionMode', ChoiceType::class, [
                 'choices' => [
-                    'bratiask.gopay_plugin.sandbox' => 'sandbox',
-                    'bratiask.gopay_plugin.production' => 'production'
+                    'sylius.ui.no_label' => false,
+                    'sylius.ui.yes_label' => true,
                 ],
-                'label' => 'bratiask.gopay_plugin.environment',
+                'label' => 'bratiask.gopay_plugin.is_production_mode',
             ])
             ->add('goid', TextType::class, [
                 'label' => 'bratiask.gopay_plugin.goid',
@@ -31,19 +31,19 @@ final class GoPayGatewayConfigurationType extends AbstractType
                 ],
             ])
             ->add('clientId', TextType::class, [
-                'label' => 'bratiask.gopay_plugin.clientId',
+                'label' => 'bratiask.gopay_plugin.client_id',
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'bratiask.gopay_plugin.gateway_configuration.clientId.not_blank',
+                        'message' => 'bratiask.gopay_plugin.gateway_configuration.client_id.not_blank',
                         'groups' => ['sylius'],
                     ])
                 ],
             ])
             ->add('clientSecret', TextType::class, [
-                'label' => 'bratiask.gopay_plugin.clientSecret',
+                'label' => 'bratiask.gopay_plugin.client_secret',
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'bratiask.gopay_plugin.gateway_configuration.clientSecret.not_blank',
+                        'message' => 'bratiask.gopay_plugin.gateway_configuration.client_secret.not_blank',
                         'groups' => ['sylius'],
                     ])
                 ],
