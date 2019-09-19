@@ -18,6 +18,9 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface
 {
     use GatewayAwareTrait;
 
+    /**
+     * @param Capture $request
+     */
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);

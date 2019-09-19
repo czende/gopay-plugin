@@ -16,6 +16,9 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
 {
     use GatewayAwareTrait;
 
+    /**
+     * @param Convert $request
+     */
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
