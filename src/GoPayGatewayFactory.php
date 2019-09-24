@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Bratiask\GoPayPlugin;
+namespace Czende\GoPayPlugin;
 
-use Bratiask\GoPayPlugin\Action\CaptureAction;
-use Bratiask\GoPayPlugin\Action\ConvertPaymentAction;
-use Bratiask\GoPayPlugin\Action\StatusAction;
+use Czende\GoPayPlugin\Action\CaptureAction;
+use Czende\GoPayPlugin\Action\ConvertPaymentAction;
+use Czende\GoPayPlugin\Action\StatusAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
 use GoPay\Definition\TokenScope;

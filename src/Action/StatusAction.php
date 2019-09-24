@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Bratiask\GoPayPlugin\Action;
+namespace Czende\GoPayPlugin\Action;
 
 use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Request\GetStatusInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Bratiask\GoPayPlugin\Api\GoPayApiInterface;
+use Czende\GoPayPlugin\Api\GoPayApiInterface;
 
 class StatusAction implements ActionInterface
 {

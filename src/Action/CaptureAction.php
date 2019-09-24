@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Bratiask\GoPayPlugin\Action;
+namespace Czende\GoPayPlugin\Action;
 
 use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
@@ -10,7 +10,7 @@ use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Capture;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Bratiask\GoPayPlugin\SetGoPay;
+use Czende\GoPayPlugin\SetGoPay;
 use Payum\Core\Security\TokenInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 

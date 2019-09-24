@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Bratiask\GoPayPlugin\Action;
+namespace Czende\GoPayPlugin\Action;
 
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayAwareInterface;
@@ -10,7 +10,7 @@ use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
-use Bratiask\GoPayPlugin\Api\GoPayApiInterface;
+use Czende\GoPayPlugin\Api\GoPayApiInterface;
 
 final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
 {

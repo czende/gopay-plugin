@@ -1,5 +1,5 @@
 {
-    "name": "bratiask/gopay-plugin",
+    "name": "czende/gopay-plugin",
     "type": "sylius-plugin",
     "description": "GoPay payment gateway plugin for Sylius applications.",
     "license": "MIT",
@@ -10,7 +10,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Bratiask\\GoPayPlugin\\": "src/"
+            "Czende\\GoPayPlugin\\": "src/"
         }
     }
 }

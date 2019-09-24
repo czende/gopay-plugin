@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Bratiask\GoPayPlugin\Api;
+namespace Czende\GoPayPlugin\Api;
 
 use GoPay\Api;
 use GoPay\Definition\Language;
