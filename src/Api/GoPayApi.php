@@ -31,7 +31,7 @@ final class GoPayApi implements GoPayApiInterface
         return $this->gopay->createPayment($order);
     }
 
-    public function retrieve(string $paymentId): Response
+    public function retrieve(int $paymentId): Response
     {
         return $this->gopay->getStatus($paymentId);
     }

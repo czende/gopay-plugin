@@ -16,5 +16,5 @@ interface GoPayApiInterface
 
     public function create(array $order): Response;
 
-    public function retrieve(string $paymentId): Response;
+    public function retrieve(int $paymentId): Response;
 }
