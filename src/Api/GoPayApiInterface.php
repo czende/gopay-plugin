@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Czende\GoPayPlugin\Api;
+namespace Bratiask\GoPayPlugin\Api;
 
 use GoPay\Http\Response;
 

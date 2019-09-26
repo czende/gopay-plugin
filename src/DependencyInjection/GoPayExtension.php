@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Czende\GoPayPlugin\DependencyInjection;
+namespace Bratiask\GoPayPlugin\DependencyInjection;
 
 use Exception;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

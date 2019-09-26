@@ -8,13 +8,13 @@
 ## Installation
 
 ```bash
-$ composer require czende/gopay-plugin
+$ composer require bratiask/gopay-plugin
 ```
     
 Add plugin dependencies to your bundles.php file:
 
 ```php
-Czende\GoPayPlugin\GoPayPlugin::class => ['all' => true]
+Bratiask\GoPayPlugin\GoPayPlugin::class => ['all' => true]
 ```
 
 ## Usage

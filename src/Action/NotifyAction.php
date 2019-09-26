@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Czende\GoPayPlugin\Action;
+namespace Bratiask\GoPayPlugin\Action;
 
 use ArrayObject;
-use Czende\GoPayPlugin\Api\GoPayApiInterface;
+use Bratiask\GoPayPlugin\Api\GoPayApiInterface;
 use Exception;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;

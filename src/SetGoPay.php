@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Czende\GoPayPlugin;
+namespace Bratiask\GoPayPlugin;
 
 use Payum\Core\Request\Generic;
 
