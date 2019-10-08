@@ -6,11 +6,21 @@
 </div>
 
 ## Installation
-
-```bash
-$ composer require bratiask/gopay-plugin
+Until pull request is merged, require it this way:
+```json
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/bratiask/gopay-plugin"
+        }
+    ],
+    "require": {
+        "bratiask/gopay-plugin": "dev-master as 1.6.0"
+    }
+}
 ```
-    
+
 Add plugin dependencies to your bundles.php file:
 
 ```php
