@@ -14,7 +14,7 @@ final class GoPayApi implements GoPayApiInterface
      */
     private $gopay;
 
-    public function authorize(string $goId, string $clientId, string $clientSecret, string $language, bool $isProductionMode): void
+    public function authorize(string $goId, string $clientId, string $clientSecret, bool $isProductionMode, string $language): void
     {
         $this->gopay = Api::payments([
             'goid' => $goId,

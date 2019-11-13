@@ -46,7 +46,7 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         $model = CoreArrayObject::ensureArrayObject($request->getModel());
 
         $gopayApi = $this->gopayApi;
-        $gopayApi->authorize($goId, $clientId, $clientSecret, $model['locale'], $isProductionMode);
+        $gopayApi->authorize($goId, $clientId, $clientSecret, $isProductionMode, $model['locale']);
 
         if (null === $model['orderId'] || null === $model['externalPaymentId']) {
             // New order.

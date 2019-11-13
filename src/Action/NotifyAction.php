@@ -43,8 +43,8 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
             $this->api['goid'],
             $this->api['clientId'],
             $this->api['clientSecret'],
-            $model['locale'],
-            $this->api['isProductionMode']
+            $this->api['isProductionMode'],
+            $model['locale']
         );
 
         try {
