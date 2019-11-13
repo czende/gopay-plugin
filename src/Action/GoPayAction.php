@@ -18,7 +18,6 @@ use Payum\Core\Payum;
 use Payum\Core\Storage\IdentityInterface;
 use RuntimeException;
 use Sylius\Component\Core\Model\CustomerInterface;
-use GoPay\Definition\Language;
 use Webmozart\Assert\Assert;
 
 class GoPayAction implements ApiAwareInterface, ActionInterface
@@ -44,10 +43,10 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         $clientSecret = $this->api['clientSecret'];
         $isProductionMode = $this->api['isProductionMode'];
 
-        $gopayApi = $this->gopayApi;
-        $gopayApi->authorize($goId, $clientId, $clientSecret, $isProductionMode);
-
         $model = CoreArrayObject::ensureArrayObject($request->getModel());
+
+        $gopayApi = $this->gopayApi;
+        $gopayApi->authorize($goId, $clientId, $clientSecret, $model['locale'], $isProductionMode);
 
         if (null === $model['orderId'] || null === $model['externalPaymentId']) {
             // New order.
@@ -119,7 +118,7 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         $order['currency'] = $model['currencyCode'];
         $order['amount'] = $model['totalAmount'];
         $order['order_number'] = $model['extOrderId'];
-        $order['lang'] = Language::ENGLISH;
+        $order['lang'] = $model['locale'];
 
         /** @var CustomerInterface $customer */
         $customer = $model['customer'];

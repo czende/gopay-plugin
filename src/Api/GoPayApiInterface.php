@@ -12,7 +12,7 @@ interface GoPayApiInterface
     const CANCELED = 'CANCELED';
     const TIMEOUTED = 'TIMEOUTED';
 
-    public function authorize(string $goId, string $clientId, string $clientSecret, bool $isProductionMode): void;
+    public function authorize(string $goId, string $clientId, string $clientSecret, string $language, bool $isProductionMode): void;
 
     public function create(array $order): Response;
 

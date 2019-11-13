@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Bratiask\GoPayPlugin\Api;
 
 use GoPay\Api;
-use GoPay\Definition\Language;
 use GoPay\Http\Response;
 use GoPay\Payments;
 
@@ -15,14 +14,14 @@ final class GoPayApi implements GoPayApiInterface
      */
     private $gopay;
 
-    public function authorize(string $goId, string $clientId, string $clientSecret, bool $isProductionMode): void
+    public function authorize(string $goId, string $clientId, string $clientSecret, string $language, bool $isProductionMode): void
     {
         $this->gopay = Api::payments([
             'goid' => $goId,
             'clientId' => $clientId,
             'clientSecret' => $clientSecret,
             'isProductionMode' => $isProductionMode,
-            'language' => Language::ENGLISH
+            'language' => $language
         ]);
     }
 
