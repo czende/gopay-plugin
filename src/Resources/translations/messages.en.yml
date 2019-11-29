@@ -1,9 +1,7 @@
-czende:
+bratiask:
     gopay_plugin:
-        goid: GoPay ID
-        clientId: Client ID
-        clientSecret: Client Secret Key
-        environment: Environment
-        production: Production
-        sandbox: Sandbox
+        client_id: Client ID
+        client_secret: Client secret
         gateway_label: GoPay
+        goid: Go ID
+        is_production_mode: Production mode

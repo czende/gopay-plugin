@@ -1,14 +1,12 @@
 <?php
+declare(strict_types=1);
 
-namespace Czende\GoPayPlugin;
+namespace Bratiask\GoPayPlugin;
 
 use Sylius\Bundle\CoreBundle\Application\SyliusPluginTrait;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-/**
- * @author Jan Czernin <jan.czernin@gmail.com>
- */
-final class GoPayPlugin extends Bundle {
-	// attach Sylius Plugin Trait
+final class GoPayPlugin extends Bundle
+{
     use SyliusPluginTrait;
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services                               http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults public="true"/>
+        <service id="bratiask.gopay.gateway_factory" class="Bratiask\GoPayPlugin\GoPayGatewayFactory"/>
+        <service id="bratiask.payum.gateway_factory_builder" class="Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder">
+            <argument type="service" id="bratiask.gopay.gateway_factory"/>
+            <tag name="payum.gateway_factory_builder" factory="gopay"/>
+        </service>
+        <service id="bratiask.gopay.api" class="Bratiask\GoPayPlugin\Api\GoPayApi"/>
+        <service id="bratiask.gopay.form.type.gateway_configuration" class="Bratiask\GoPayPlugin\Form\Type\GoPayGatewayConfigurationType">
+            <tag name="sylius.gateway_configuration_type" type="gopay" label="bratiask.gopay_plugin.gateway_label"/>
+            <tag name="form.type"/>
+        </service>
+        <service id="bratiask.gopay.action.gopay" class="Bratiask\GoPayPlugin\Action\GoPayAction">
+            <argument type="service" id="bratiask.gopay.api"/>
+            <argument type="service" id="payum"/>
+            <tag name="payum.action" factory="gopay"/>
+        </service>
+        <service id="bratiask.gopay.action.notify" class="Bratiask\GoPayPlugin\Action\NotifyAction">
+            <argument type="service" id="bratiask.gopay.api"/>
+            <tag name="payum.action" factory="gopay"/>
+        </service>
+    </services>
+</container>
