@@ -4,9 +4,9 @@
     "description": "GoPay payment gateway plugin for Sylius applications.",
     "license": "MIT",
     "require": {
-        "php": "^7.2",
-        "sylius/sylius": "^1.6",
-        "gopay/payments-sdk-php": "^1.4.1"
+        "php": "^8.0",
+        "sylius/sylius": "^1.10",
+        "gopay/payments-sdk-php": "^1.4.5"
     },
     "autoload": {
         "psr-4": {

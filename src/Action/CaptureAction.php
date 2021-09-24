@@ -1,16 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Bratiask\GoPayPlugin\Action;
 
 use ArrayAccess;
+use Bratiask\GoPayPlugin\SetGoPay;
+use JetBrains\PhpStorm\Pure;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Capture;
-use Payum\Core\GatewayAwareInterface;
-use Payum\Core\Exception\RequestNotSupportedException;
-use Bratiask\GoPayPlugin\SetGoPay;
 use Payum\Core\Security\TokenInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 
@@ -18,10 +20,7 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface
 {
     use GatewayAwareTrait;
 
-    /**
-     * @param Capture $request
-     */
-    public function execute($request): void
+    public function execute(mixed $request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -36,7 +35,8 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface
         $this->gateway->execute($this->goPayAction($request->getToken(), $model));
     }
 
-    public function supports($request): bool
+    #[Pure]
+    public function supports(mixed $request): bool
     {
         return $request instanceof Capture && $request->getModel() instanceof ArrayAccess;
     }

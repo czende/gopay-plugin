@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Bratiask\GoPayPlugin;
@@ -6,10 +7,10 @@ namespace Bratiask\GoPayPlugin;
 use Bratiask\GoPayPlugin\Action\CaptureAction;
 use Bratiask\GoPayPlugin\Action\ConvertPaymentAction;
 use Bratiask\GoPayPlugin\Action\StatusAction;
+use GoPay\Definition\Language;
+use GoPay\Definition\TokenScope;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
-use GoPay\Definition\TokenScope;
-use GoPay\Definition\Language;
 
 class GoPayGatewayFactory extends GatewayFactory
 {

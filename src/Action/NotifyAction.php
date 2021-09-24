@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Bratiask\GoPayPlugin\Action;
@@ -6,6 +7,7 @@ namespace Bratiask\GoPayPlugin\Action;
 use ArrayObject;
 use Bratiask\GoPayPlugin\Api\GoPayApiInterface;
 use Exception;
+use JetBrains\PhpStorm\Pure;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
@@ -18,19 +20,18 @@ use Webmozart\Assert\Assert;
 
 final class NotifyAction implements ActionInterface, ApiAwareInterface
 {
-    use GatewayAwareTrait;
+    use GatewayAwareTrait, UpdateOrderActionTrait;
 
-    protected $gopayApi;
-    private $api = [];
+    private array $api = [];
 
-    public function __construct(GoPayApiInterface $gopayApi)
+    public function __construct(
+        private GoPayApiInterface $gopayApi
+    )
     {
-        $this->gopayApi = $gopayApi;
     }
 
-    public function execute($request)
+    public function execute(mixed $request): void
     {
-        /** @var $request Notify */
         RequestNotSupportedException::assertSupports($this, $request);
 
         /** @var PaymentInterface $payment */
@@ -48,41 +49,21 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
         );
 
         try {
-            $response = $this->gopayApi->retrieve($model['externalPaymentId']);
-
-            if (GoPayApiInterface::PAID === $response->json['state']) {
-                $model['gopayStatus'] = $response->json['state'];
-                $request->setModel($model);
-            }
-
-            if (GoPayApiInterface::CANCELED === $response->json['state']) {
-                $model['gopayStatus'] = $response->json['state'];
-                $request->setModel($model);
-            }
-
-            if (GoPayApiInterface::TIMEOUTED === $response->json['state']) {
-                $model['gopayStatus'] = $response->json['state'];
-                $request->setModel($model);
-            }
-
-            if (GoPayApiInterface::CREATED === $response->json['state']) {
-                $model['gopayStatus'] = GoPayApiInterface::CANCELED;
-                $request->setModel($model);
-            }
+            $this->updateExistingOrder($this->gopayApi, $request, $model);
 
             throw new HttpResponse('SUCCESS');
-
         } catch (Exception $e) {
             throw new HttpResponse($e->getMessage());
         }
     }
 
-    public function supports($request): bool
+    #[Pure]
+    public function supports(mixed $request): bool
     {
         return $request instanceof Notify && $request->getModel() instanceof ArrayObject;
     }
 
-    public function setApi($api): void
+    public function setApi(mixed $api): void
     {
         if (!is_array($api)) {
             throw new UnsupportedApiException('Not supported.');

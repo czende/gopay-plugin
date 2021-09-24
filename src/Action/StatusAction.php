@@ -1,21 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Bratiask\GoPayPlugin\Action;
 
 use ArrayAccess;
+use Bratiask\GoPayPlugin\Api\GoPayApiInterface;
 use Payum\Core\Action\ActionInterface;
-use Payum\Core\Request\GetStatusInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Bratiask\GoPayPlugin\Api\GoPayApiInterface;
+use Payum\Core\Request\GetStatusInterface;
 
 class StatusAction implements ActionInterface
 {
-    /**
-     * @param GetStatusInterface $request
-     */
-    public function execute($request): void
+    public function execute(mixed $request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -45,7 +43,7 @@ class StatusAction implements ActionInterface
         $request->markUnknown();
     }
 
-    public function supports($request): bool
+    public function supports(mixed $request): bool
     {
         return $request instanceof GetStatusInterface && $request->getModel() instanceof ArrayAccess;
     }

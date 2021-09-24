@@ -1,25 +1,24 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Bratiask\GoPayPlugin\Action;
 
+use Bratiask\GoPayPlugin\Api\GoPayApiInterface;
+use JetBrains\PhpStorm\Pure;
+use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
-use Payum\Core\Action\ActionInterface;
-use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
-use Bratiask\GoPayPlugin\Api\GoPayApiInterface;
 
 final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
 {
     use GatewayAwareTrait;
 
-    /**
-     * @param Convert $request
-     */
-    public function execute($request): void
+    public function execute(mixed $request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -39,13 +38,14 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
         $request->setResult((array)$details);
     }
 
-    public function supports($request): bool
+    #[Pure]
+    public function supports(mixed $request): bool
     {
         return $request instanceof Convert && $request->getSource() instanceof PaymentInterface && 'array' === $request->getTo();
     }
 
     private function customerIp(): ?string
     {
-        return array_key_exists('REMOTE_ADDR', $_SERVER) ? $_SERVER['REMOTE_ADDR'] : null;
+        return $_SERVER['REMOTE_ADDR'] ?? null;
     }
 }
