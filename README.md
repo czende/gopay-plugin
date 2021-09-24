@@ -16,7 +16,7 @@ Until pull request is merged, require it this way:
         }
     ],
     "require": {
-        "bratiask/gopay-plugin": "dev-master as 1.6.0"
+        "bratiask/gopay-plugin": "^1.10"
     }
 }
 ```
