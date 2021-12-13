@@ -1,20 +1,23 @@
 <?php
 
-namespace Czende\GoPayPlugin\DependencyInjection;
+declare(strict_types=1);
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+namespace Bratiask\GoPayPlugin\DependencyInjection;
+
+use Exception;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader;
 
-class GoPayExtension extends Extension {
-    
+class GoPayExtension extends Extension
+{
     /**
-     * {@inheritdoc}
+     * @throws Exception
      */
-    public function load(array $configs, ContainerBuilder $container) {
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-
-        $loader->load('services.yml');
+    public function load(array $configs, ContainerBuilder $container): void
+    {
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('services.xml');
     }
 }

@@ -1,9 +1,11 @@
 <?php
 
-namespace Czende\GoPayPlugin;
+declare(strict_types=1);
+
+namespace Bratiask\GoPayPlugin;
 
 use Payum\Core\Request\Generic;
 
-class SetGoPay extends Generic {
-	// Setting GoPay into Payum
+class SetGoPay extends Generic
+{
 }

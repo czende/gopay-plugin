@@ -1,54 +1,53 @@
 <?php
 
-namespace Czende\GoPayPlugin\Form\Type;
+declare(strict_types=1);
+
+namespace Bratiask\GoPayPlugin\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-final class GoPayGatewayConfigurationType extends AbstractType {
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(FormBuilderInterface $builder, array $options) {
+final class GoPayGatewayConfigurationType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
         $builder
-            ->add('environment', ChoiceType::class, [
+            ->add('isProductionMode', ChoiceType::class, [
                 'choices' => [
-                    'czende.gopay_plugin.sandbox' => 'sandbox',
-                    'czende.gopay_plugin.production' => 'production'
+                    'sylius.ui.no_label' => false,
+                    'sylius.ui.yes_label' => true,
                 ],
-                'label' => 'czende.gopay_plugin.environment',
+                'label' => 'bratiask.gopay_plugin.is_production_mode',
             ])
             ->add('goid', TextType::class, [
-                'label' => 'czende.gopay_plugin.goid',
+                'label' => 'bratiask.gopay_plugin.goid',
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'czende.gopay_plugin.gateway_configuration.goid.not_blank',
+                        'message' => 'bratiask.gopay_plugin.gateway_configuration.goid.not_blank',
                         'groups' => ['sylius'],
                     ])
                 ],
             ])
             ->add('clientId', TextType::class, [
-                'label' => 'czende.gopay_plugin.clientId',
+                'label' => 'bratiask.gopay_plugin.client_id',
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'czende.gopay_plugin.gateway_configuration.clientId.not_blank',
+                        'message' => 'bratiask.gopay_plugin.gateway_configuration.client_id.not_blank',
                         'groups' => ['sylius'],
                     ])
                 ],
             ])
             ->add('clientSecret', TextType::class, [
-                'label' => 'czende.gopay_plugin.clientSecret',
+                'label' => 'bratiask.gopay_plugin.client_secret',
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'czende.gopay_plugin.gateway_configuration.clientSecret.not_blank',
+                        'message' => 'bratiask.gopay_plugin.gateway_configuration.client_secret.not_blank',
                         'groups' => ['sylius'],
                     ])
                 ],
-            ])
-        ;
+            ]);
     }
 }

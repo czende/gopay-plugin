@@ -1,31 +1,28 @@
 <?php
 
-namespace Czende\GoPayPlugin\Action;
+declare(strict_types=1);
 
+namespace Bratiask\GoPayPlugin\Action;
+
+use Bratiask\GoPayPlugin\Api\GoPayApiInterface;
+use JetBrains\PhpStorm\Pure;
+use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
-use Payum\Core\Action\ActionInterface;
-use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
-use Czende\GoPayPlugin\Api\GoPayApiInterface;
 
-/**
- * @author Jan Czernin <jan.czernin@gmail.com>
- */
-final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface {
+final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
+{
     use GatewayAwareTrait;
 
-    /**
-     * @param mixed $request
-     * 
-     * @throws RequestNotSupportedException
-     */
-    public function execute($request) {
+    public function execute(mixed $request): void
+    {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        /** @var PaymentInterface */
+        /** @var PaymentInterface $payment */
         $payment = $request->getSource();
         $details = ArrayObject::ensureArrayObject($payment->getDetails());
 
@@ -35,30 +32,20 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
         $details['description'] = $payment->getDescription();
         $details['client_email'] = $payment->getClientEmail();
         $details['client_id'] = $payment->getClientId();
-        $details['customerIp'] = $this->getClientIp();
-        $details['status']  = GoPayApiInterface::CREATED;
+        $details['customerIp'] = $this->customerIp();
+        $details['status'] = GoPayApiInterface::CREATED;
 
-        $request->setResult((array) $details);
+        $request->setResult((array)$details);
     }
 
-
-    /**
-     * @param mixed $request
-     * 
-     * @return boolean
-     */
-    public function supports($request) {
-        return
-            $request instanceof Convert &&
-            $request->getSource() instanceof PaymentInterface &&
-            $request->getTo() === 'array';
+    #[Pure]
+    public function supports(mixed $request): bool
+    {
+        return $request instanceof Convert && $request->getSource() instanceof PaymentInterface && 'array' === $request->getTo();
     }
-    
 
-    /**
-     * @return string|null
-     */
-    private function getClientIp() {
-        return array_key_exists('REMOTE_ADDR', $_SERVER) ? $_SERVER['REMOTE_ADDR'] : null;
+    private function customerIp(): ?string
+    {
+        return $_SERVER['REMOTE_ADDR'] ?? null;
     }
 }

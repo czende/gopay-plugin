@@ -1,9 +1,9 @@
-czende:
+bratiask:
     gopay_plugin:
         gateway_configuration:
-            goid: 
-                not_blank: Please enter GoPay GoID
-            clientId:
+            client_id:
                 not_blank: Please enter Client ID
-            clientSecret:
-                not_blank: Please enter Client Secret Key
+            client_secret:
+                not_blank: Please enter Client secret
+            goid:
+                not_blank: Please enter Go ID

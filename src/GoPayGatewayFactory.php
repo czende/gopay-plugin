@@ -1,59 +1,52 @@
 <?php
 
-namespace Czende\GoPayPlugin;
+declare(strict_types=1);
 
-use Czende\GoPayPlugin\Action\CaptureAction;
-use Czende\GoPayPlugin\Action\ConvertPaymentAction;
-use Czende\GoPayPlugin\Action\StatusAction;
+namespace Bratiask\GoPayPlugin;
+
+use Bratiask\GoPayPlugin\Action\CaptureAction;
+use Bratiask\GoPayPlugin\Action\ConvertPaymentAction;
+use Bratiask\GoPayPlugin\Action\StatusAction;
+use GoPay\Definition\Language;
+use GoPay\Definition\TokenScope;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
-use GoPay\Definition\TokenScope;
-use GoPay\Definition\Language;
 
 class GoPayGatewayFactory extends GatewayFactory
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function populateConfig(ArrayObject $config)
+    protected function populateConfig(ArrayObject $config): void
     {
         $config->defaults([
             'payum.factory_name' => 'gopay',
             'payum.factory_title' => 'GoPay',
-            
+
             'payum.action.capture' => new CaptureAction(),
             'payum.action.convert_payment' => new ConvertPaymentAction(),
             'payum.action.status' => new StatusAction()
         ]);
 
         if (false == $config['payum.api']) {
-            // Set GoPay default options
             $config['payum.default_options'] = [
                 'goid' => '',
                 'clientId' => '',
                 'clientSecret' => '',
-                'isProductionMode' => ''
+                'isProductionMode' => false
             ];
             $config->defaults($config['payum.default_options']);
 
-            // Set GoPay required fields
-            $config['payum.required_options'] = ['goid', 'clientId', 'clientSecret', 'environment'];
+            $config['payum.required_options'] = ['goid', 'clientId', 'clientSecret'];
 
-            // Set Payum API
             $config['payum.api'] = function (ArrayObject $config) {
                 $config->validateNotEmpty($config['payum.required_options']);
-
-                $gopayconfig = [
+                return [
                     'goid' => $config['goid'],
                     'clientId' => $config['clientId'],
                     'clientSecret' => $config['clientSecret'],
-                    'isProductionMode' => ($config['environment'] == 'production' ? true : false),
+                    'isProductionMode' => $config['isProductionMode'],
                     'scope' => TokenScope::ALL,
-                    'language' => Language::CZECH,
+                    'language' => Language::ENGLISH,
                     'timeout' => 30
                 ];
-
-                return $gopayconfig;
             };
         }
     }

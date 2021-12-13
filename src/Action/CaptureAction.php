@@ -1,81 +1,56 @@
 <?php
 
-namespace Czende\GoPayPlugin\Action;
+declare(strict_types=1);
 
+namespace Bratiask\GoPayPlugin\Action;
+
+use ArrayAccess;
+use Bratiask\GoPayPlugin\SetGoPay;
+use JetBrains\PhpStorm\Pure;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Capture;
-use Payum\Core\GatewayInterface;
-use Payum\Core\GatewayAwareInterface;
-use Payum\Core\Exception\RequestNotSupportedException;
-use Czende\GoPayPlugin\SetGoPay;
 use Payum\Core\Security\TokenInterface;
+use Sylius\Component\Core\Model\OrderInterface;
 
-/**
- * @author Jan Czernin <jan.czernin@gmail.com>
- */
-final class CaptureAction implements ActionInterface, GatewayAwareInterface {
+final class CaptureAction implements ActionInterface, GatewayAwareInterface
+{
     use GatewayAwareTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function execute($request) {
+    public function execute(mixed $request): void
+    {
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = $request->getModel();
         ArrayObject::ensureArrayObject($model);
 
+        /** @var OrderInterface $order */
         $order = $request->getFirstModel()->getOrder();
         $model['customer'] = $order->getCustomer();
-        $model['locale'] = $this->getFallbackLocaleCode($order->getLocaleCode());
+        $model['locale'] = $this->fallbackLocaleCode($order->getLocaleCode());
 
-        $goPayAction = $this->getGoPayAction($request->getToken(), $model);
-
-        $this->getGateway()->execute($goPayAction);
+        $this->gateway->execute($this->goPayAction($request->getToken(), $model));
     }
 
-
-    /**
-     * {@inheritdoc}
-     */
-    public function supports($request) {
-        return
-            $request instanceof Capture &&
-            $request->getModel() instanceof \ArrayAccess;
+    #[Pure]
+    public function supports(mixed $request): bool
+    {
+        return $request instanceof Capture && $request->getModel() instanceof ArrayAccess;
     }
 
-
-    /**
-     * @return GatewayInterface
-     */
-    public function getGateway() {
-        return $this->gateway;
-    }
-
-
-    /**
-     * @param TokenInterface $token
-     * @param ArrayObject $model
-     *
-     * @return SetGoPay
-     */
-    private function getGoPayAction(TokenInterface $token, ArrayObject $model) {
+    private function goPayAction(TokenInterface $token, ArrayObject $model): SetGoPay
+    {
         $gopayAction = new SetGoPay($token);
         $gopayAction->setModel($model);
 
         return $gopayAction;
     }
 
-
-    /**
-     * Get order fallback locale
-     * @param  string $localeCode
-     * @return string
-     */
-    private function getFallbackLocaleCode($localeCode) {
+    private function fallbackLocaleCode(string $localeCode): string
+    {
         return explode('_', $localeCode)[0];
     }
 }
-
